@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function() {
         imagesDiv.className = 'images';
 
         // Nombre d'images par chapitre à ajuster si nécessaire
-        for (let i = 1; i <= 50; i++) {
+        for (let i = 1; i <= 12; i++) {
             const img = document.createElement('img');
             img.src = `Chapitre/Chapitre ${chapterId}/${String(i).padStart(2, '0')}.jpg`;
             img.alt = `Page ${i}`;
