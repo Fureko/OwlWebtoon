@@ -1,7 +1,7 @@
 body {
     background-color: #DFF6FF;
     color: #06283D;
-    font-family: Arial, sans-serif;
+    font-family: Silkscreen, sans-serif;
     margin: 0;
     padding: 0;
 }
@@ -19,8 +19,36 @@ h1 {
     color: #1363DF;
 }
 
+.tabs {
+    display: flex;
+    overflow-x: auto;
+    border-bottom: 2px solid #1363DF;
+    margin-bottom: 20px;
+}
+
+.tab {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    background-color: #ffffff;
+    border: 1px solid #1363DF;
+    border-bottom: none;
+    color: #1363DF;
+    transition: background-color 0.3s;
+}
+
+.tab.active {
+    background-color: #47B5FF;
+    color: #ffffff;
+}
+
 .chapter {
-    margin-bottom: 40px;
+    display: none;
+}
+
+.chapter.active {
+    display: block;
 }
 
 .chapter h2 {
