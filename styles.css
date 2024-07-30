@@ -1,7 +1,8 @@
+/* styles.css */
 body {
     background-color: #DFF6FF;
     color: #06283D;
-    font-family: Silkscreen, sans-serif;
+    font-family: Silkscreen;
     margin: 0;
     padding: 0;
 }
@@ -19,26 +20,25 @@ h1 {
     color: #1363DF;
 }
 
-.tabs {
+.webtoon-buttons, .tabs {
     display: flex;
     overflow-x: auto;
-    border-bottom: 2px solid #1363DF;
     margin-bottom: 20px;
 }
 
-.tab {
+.webtoon-button, .tab {
     flex: 1;
     padding: 10px;
     text-align: center;
     cursor: pointer;
     background-color: #ffffff;
     border: 1px solid #1363DF;
-    border-bottom: none;
+    margin-right: 5px;
     color: #1363DF;
     transition: background-color 0.3s;
 }
 
-.tab.active {
+.webtoon-button.active, .tab.active {
     background-color: #47B5FF;
     color: #ffffff;
 }
