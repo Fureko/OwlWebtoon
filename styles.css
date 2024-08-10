@@ -21,6 +21,27 @@ h1 {
     color: #1363DF;
 }
 
+/* Styles pour la liste déroulante */
+.webtoon-dropdown {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    font-family: Silkscreen;
+    font-size: 16px;
+    color: #1363DF;
+    background-color: #ffffff;
+    border: 2px solid #1363DF;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.webtoon-dropdown:hover {
+    background-color: #47B5FF;
+    color: #ffffff;
+}
+
 .webtoon-buttons, .tabs {
     display: flex;
     overflow-x: auto;

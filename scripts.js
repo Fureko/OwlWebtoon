@@ -1,12 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const webtoonsContainer = document.querySelector(".webtoon-buttons");
+    const webtoonDropdown = document.getElementById("webtoonDropdown");
     const tabsContainer = document.querySelector(".tabs");
     const chaptersContainer = document.getElementById("chapters");
     const scrollToTopBtn = document.getElementById("scrollToTopBtn");
-
-    function generateChapters(count) {
-        return Array.from({ length: count }, (_, i) => i + 1);
-    }
 
     const webtoonData = {
         "Blue Project": {
@@ -27,6 +23,38 @@ document.addEventListener("DOMContentLoaded", () => {
             chapters: generateChapters(128)
         }
     };
+
+    function generateChapters(count) {
+        return Array.from({ length: count }, (_, i) => i + 1);
+    }
+
+    function initializeDropdown() {
+        Object.keys(webtoonData).forEach((webtoonName) => {
+            const option = document.createElement("option");
+            option.value = webtoonName;
+            option.textContent = webtoonName;
+            webtoonDropdown.appendChild(option);
+        });
+
+        webtoonDropdown.addEventListener("change", async () => {
+            const selectedWebtoon = webtoonDropdown.value;
+            if (selectedWebtoon) {
+                clearChapters();
+                addTabs(selectedWebtoon);
+                await loadWebtoonChapters(selectedWebtoon);
+                activateFirstChapter();
+            }
+        });
+
+        // Charger le premier webtoon par défaut
+        if (webtoonDropdown.firstChild) {
+            webtoonDropdown.value = webtoonDropdown.firstChild.value;
+            const firstWebtoonName = webtoonDropdown.firstChild.value;
+            addTabs(firstWebtoonName);
+            loadWebtoonChapters(firstWebtoonName);
+            activateFirstChapter();
+        }
+    }
 
     async function loadChapterImages(webtoonName, chapterIndex) {
         const chapterName = `Chapitre ${chapterIndex}`;
@@ -112,21 +140,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    function addWebtoonButton(webtoonName) {
-        const button = document.createElement("div");
-        button.className = "webtoon-button";
-        button.id = `webtoon-${webtoonName}`;
-        button.textContent = webtoonName;
-        button.addEventListener("click", () => {
-            document.querySelectorAll(".webtoon-button").forEach((b) => b.classList.remove("active"));
-            button.classList.add("active");
-            clearChapters();
-            addTabs(webtoonName);
-            activateFirstChapter();
-        });
-        webtoonsContainer.appendChild(button);
-    }
-
     function clearChapters() {
         chaptersContainer.innerHTML = "";
     }
@@ -140,17 +153,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    function initializeWebtoonButtons() {
-        Object.keys(webtoonData).forEach((webtoonName) => {
-            addWebtoonButton(webtoonName);
+    function loadWebtoonChapters(webtoonName) {
+        webtoonData[webtoonName].chapters.forEach((chapterIndex) => {
+            loadChapterImages(webtoonName, chapterIndex);
         });
-
-        if (webtoonsContainer.firstChild) {
-            webtoonsContainer.firstChild.classList.add("active");
-            const firstWebtoonName = Object.keys(webtoonData)[0];
-            addTabs(firstWebtoonName);
-            activateFirstChapter();
-        }
     }
 
     // Ajout du bouton "Remonter en haut de la page"
@@ -166,5 +172,5 @@ document.addEventListener("DOMContentLoaded", () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
     });
 
-    initializeWebtoonButtons();
+    initializeDropdown();
 });
