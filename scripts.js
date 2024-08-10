@@ -5,24 +5,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const scrollToTopBtn = document.getElementById('scrollToTopBtn');
     
     function generateChapters(count) {
-    return Array.from({ length: count }, (_, i) => i + 1);
-}
-
-const webtoonData = {
-    "Blue Project": {
-        chapters: [...generateChapters(24), 25, 25.5, ...generateChapters(22).map(n => n + 25)] // 1 à 24, 25, 25.5, 26 à 47
-    },
-    "Roses and Champagne": {
-        chapters: generateChapters(52)  // Chapitres de 1 à 52
-    },
-    "Oshi No Ko": {
-        chapters: [...generateChapters(156), 20.5, 25.5, 25.6, 25.7, 25.8, 90.1, 90.2, 111.1, 115.5, 125.5, 125.6, 125.7, 125.8]  // Chapitres normaux et spéciaux
-    },
-    "La Vrai C'est Moi": {
-        chapters: generateChapters(128)  // Chapitres de 1 à 128
+        return Array.from({ length: count }, (_, i) => i + 1);
     }
-};
 
+    const webtoonData = {
+        "Blue Project": {
+            chapters: [...generateChapters(24), 25, 25.5, ...generateChapters(22).map(n => n + 25)] // 1 à 24, 25, 25.5, 26 à 47
+        },
+        "Roses and Champagne": {
+            chapters: generateChapters(52)  // Chapitres de 1 à 52
+        },
+        "Oshi No Ko": {
+            chapters: [...generateChapters(156), 20.5, 25.5, 25.6, 25.7, 25.8, 90.1, 90.2, 111.1, 115.5, 125.5, 125.6, 125.7, 125.8]  // Chapitres normaux et spéciaux
+        },
+        "La Vrai C'est Moi": {
+            chapters: generateChapters(128)  // Chapitres de 1 à 128
+        }
+    };
 
     // Fonction pour charger les images d'un chapitre
     async function loadChapterImages(webtoonName, chapterIndex) {
@@ -43,16 +42,17 @@ const webtoonData = {
 
         while (true) {
             const imgSrc = `Webtoon/${webtoonName}/${chapterName}/${String(index).padStart(2, '0')}.jpg`;
-            const imgExists = await imageExists(imgSrc);
 
+            const imgExists = await imageExists(imgSrc);
             if (!imgExists) {
                 break;
             }
 
             hasImages = true;
             const img = document.createElement('img');
-            img.src = imgSrc;
+            img.dataset.src = imgSrc;  // Utilisation de data-src pour le lazy loading
             img.alt = `Page ${index}`;
+            img.classList.add('lazyload');  // Ajouter une classe pour le lazy loading
             imagesDiv.appendChild(img);
 
             index++;
@@ -61,6 +61,25 @@ const webtoonData = {
         if (hasImages) {
             chapterDiv.appendChild(imagesDiv);
             chaptersContainer.appendChild(chapterDiv);
+        }
+
+        // Initialiser le lazy loading pour les nouvelles images
+        if ('IntersectionObserver' in window) {
+            let lazyImages = [].slice.call(chapterDiv.querySelectorAll('.lazyload'));
+            let lazyImageObserver = new IntersectionObserver(function(entries, observer) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        let lazyImage = entry.target;
+                        lazyImage.src = lazyImage.dataset.src;
+                        lazyImage.classList.remove('lazyload');
+                        lazyImageObserver.unobserve(lazyImage);
+                    }
+                });
+            });
+
+            lazyImages.forEach(function(lazyImage) {
+                lazyImageObserver.observe(lazyImage);
+            });
         }
     }
 
@@ -98,6 +117,7 @@ const webtoonData = {
             document.querySelectorAll('.chapter').forEach(c => c.classList.remove('active'));
             tab.classList.add('active');
             document.getElementById(`webtoon-${webtoonName}-chapter-${chapterIndex}`).classList.add('active');
+            removeNonActiveChapters();  // Supprime les chapitres non actifs du DOM
         });
         tabsContainer.appendChild(tab);
     }
@@ -114,6 +134,7 @@ const webtoonData = {
             // Effacer le contenu précédent
             tabsContainer.innerHTML = '';
             chaptersContainer.innerHTML = '';
+            removeNonActiveChapters();  // Supprime les chapitres non actifs
             // Ajouter les onglets des chapitres
             addTabs(webtoonName);
             // Charger les images pour les chapitres
@@ -159,15 +180,19 @@ const webtoonData = {
         });
     }
 
+    // Appel à l'initialisation
     initializeWebtoonButtons();
-});
-document.addEventListener("DOMContentLoaded", () => {
-    // Code existant pour les webtoons, chapitres, etc.
 
-    // Ajouter le bouton "Remonter" après tout le reste
-    const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+    // Fonction pour supprimer les chapitres non actifs
+    function removeNonActiveChapters() {
+        document.querySelectorAll('.chapter').forEach(chapter => {
+            if (!chapter.classList.contains('active')) {
+                chapter.remove();  // Supprime les chapitres non actifs du DOM
+            }
+        });
+    }
 
-    // Afficher ou masquer le bouton en fonction du défilement de la page
+    // Gestion du bouton pour remonter la page
     window.addEventListener('scroll', () => {
         if (window.scrollY > 300) { // Afficher le bouton après avoir fait défiler 300px
             scrollToTopBtn.style.display = 'block';
@@ -180,7 +205,4 @@ document.addEventListener("DOMContentLoaded", () => {
     scrollToTopBtn.addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' }); // Défilement fluide vers le haut
     });
-
-    // Votre code existant pour initialiser les webtoons, chapitres, etc.
-    initializeWebtoonButtons();
 });
